@@ -1,0 +1,3 @@
+Not all methods have to be attached to an INSTANCE of a class.
+You can assign a method to just the class with the keyword STATIC
+
