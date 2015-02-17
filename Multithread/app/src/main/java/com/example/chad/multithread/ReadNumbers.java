@@ -1,6 +1,9 @@
 package com.example.chad.multithread;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,8 +19,15 @@ import java.util.List;
 public class ReadNumbers implements Runnable {
     private File file;
     private List<String> numberlist = new ArrayList<String>();
-    public ReadNumbers (File file) {
+    private ArrayAdapter<String> adapter;
+    private Context context;
+    public ReadNumbers (File file, Context context) {
         this.file = file;
+        this.context = context;
+    }
+
+    public void load() {
+
     }
 
 
@@ -46,6 +56,7 @@ public class ReadNumbers implements Runnable {
             ex.printStackTrace();
         }
 
+        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, numberlist);
 
 
     }

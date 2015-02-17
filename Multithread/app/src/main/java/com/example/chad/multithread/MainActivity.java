@@ -1,15 +1,25 @@
 package com.example.chad.multithread;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -21,15 +31,18 @@ public class MainActivity extends ActionBarActivity {
 
         String filename = "numbers.txt";
         Context context = this;
+        final List<String> numberlist = new ArrayList<String>();
+
 
         //Create a new file
-        File file = new File(context.getFilesDir(), filename);
+        final File file = new File(context.getFilesDir(), filename);
         final WriteNumbers writeThread = new WriteNumbers(file);
-        final ReadNumbers readThread = new ReadNumbers(file);
+        final ReadNumbers readThread = new ReadNumbers(file, this);
 
         Button create_button = (Button) findViewById(R.id.create_button);
         Button load_button = (Button) findViewById(R.id.load_button);
         Button clear_button = (Button) findViewById(R.id.clear_button);
+        final ListView listView = (ListView) findViewById(R.id.list_view);
 
 
         //Write to the new file
@@ -44,9 +57,62 @@ public class MainActivity extends ActionBarActivity {
         load_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread load_thread = new Thread(readThread);
-                load_thread.start();
+               /* Thread load_thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            FileReader reader = new FileReader(file);
+                            BufferedReader buffReader = new BufferedReader(reader);
+                            String fileLine;
+                            try {
+                                while((fileLine = buffReader.readLine()) != null) {
+                                    numberlist.add(fileLine);
+                                    try {
+                                        Thread.sleep(250);
+                                    } catch (InterruptedException inter_ex) {
+                                        inter_ex.printStackTrace();
+                                    }
+                                    System.out.println("Read: " + fileLine);
+                                }
 
+                            } catch (IOException io_ex) {
+                                io_ex.printStackTrace();
+                            }
+
+                        } catch (FileNotFoundException ex) {
+                            ex.printStackTrace();
+                        }
+
+                    }
+                });
+
+                load_thread.start();*/
+                try {
+                    FileReader reader = new FileReader(file);
+                    BufferedReader buffReader = new BufferedReader(reader);
+                    String fileLine;
+                    try {
+                        while((fileLine = buffReader.readLine()) != null) {
+                            numberlist.add(fileLine);
+                            try {
+                                Thread.sleep(250);
+                            } catch (InterruptedException inter_ex) {
+                                inter_ex.printStackTrace();
+                            }
+                            System.out.println("Read: " + fileLine);
+                        }
+
+                    } catch (IOException io_ex) {
+                        io_ex.printStackTrace();
+                    }
+
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+
+
+                ArrayAdapter adapter = new ArrayAdapter<String>(getApplication(), R.layout.my_text, R.id.my_text, numberlist);
+                listView.setAdapter(adapter);
             }
         });
 
