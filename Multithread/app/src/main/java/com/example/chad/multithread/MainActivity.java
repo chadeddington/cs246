@@ -21,20 +21,42 @@ public class MainActivity extends ActionBarActivity {
 
         String filename = "numbers.txt";
         Context context = this;
+
         //Create a new file
         File file = new File(context.getFilesDir(), filename);
         final WriteNumbers writeThread = new WriteNumbers(file);
-        Button create_button = (Button) findViewById(R.id.create_button);
+        final ReadNumbers readThread = new ReadNumbers(file);
 
+        Button create_button = (Button) findViewById(R.id.create_button);
+        Button load_button = (Button) findViewById(R.id.load_button);
+        Button clear_button = (Button) findViewById(R.id.clear_button);
 
 
         //Write to the new file
         create_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                writeThread.run();
+                Thread t1 = new Thread(writeThread);
+                t1.start();
             }
         });
+
+        load_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread load_thread = new Thread(readThread);
+                load_thread.start();
+
+            }
+        });
+
+        clear_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
 
     }
 

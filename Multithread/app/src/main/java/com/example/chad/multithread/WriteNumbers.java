@@ -26,8 +26,11 @@ public class WriteNumbers implements Runnable {
                 } catch (InterruptedException in_ex) {
                     in_ex.printStackTrace();
                 }
-            System.out.println(i);
+                System.out.println(i);
             }
+
+            writer.flush();
+            writer.close();
         } catch (IOException io_ex) {
             io_ex.printStackTrace();
         }
