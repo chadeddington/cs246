@@ -5,7 +5,43 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ProgressBar
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:id="@+id/progress_bar"
+        android:layout_centerHorizontal="true"/>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        android:id="@+id/list_view"
+        android:layout_below="@+id/progress_bar">
+
+        </ListView>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_button"
+        android:text="Create"
+        android:layout_alignLeft="@+id/progress_bar"
+        android:layout_below="@+id/list_view"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/load_button"
+        android:text="Load"
+        android:layout_alignTop="@+id/create_button"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clear_button"
+        android:text="clear"
+        android:layout_alignTop="@+id/load_button"
+        android:layout_alignEnd="@+id/progress_bar" />
+
+
 
 </RelativeLayout>

@@ -1,9 +1,15 @@
 package com.example.chad.multithread;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +18,24 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String filename = "numbers.txt";
+        Context context = this;
+        //Create a new file
+        File file = new File(context.getFilesDir(), filename);
+        final WriteNumbers writeThread = new WriteNumbers(file);
+        Button create_button = (Button) findViewById(R.id.create_button);
+
+
+
+        //Write to the new file
+        create_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                writeThread.run();
+            }
+        });
+
     }
 
 
