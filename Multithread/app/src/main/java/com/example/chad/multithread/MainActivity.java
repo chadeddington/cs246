@@ -1,7 +1,6 @@
 package com.example.chad.multithread;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,119 +9,126 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MainActivity extends ActionBarActivity {
+
+    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        final List<String> numberlist = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(getApplication(), R.layout.my_text, R.id.my_text, numberlist);
         String filename = "numbers.txt";
         Context context = this;
-        final List<String> numberlist = new ArrayList<String>();
 
 
         //Create a new file
         final File file = new File(context.getFilesDir(), filename);
-        final WriteNumbers writeThread = new WriteNumbers(file);
-        final ReadNumbers readThread = new ReadNumbers(file, this);
 
         Button create_button = (Button) findViewById(R.id.create_button);
         Button load_button = (Button) findViewById(R.id.load_button);
         Button clear_button = (Button) findViewById(R.id.clear_button);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         final ListView listView = (ListView) findViewById(R.id.list_view);
+        listView.setAdapter(adapter);
 
 
         //Write to the new file
         create_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread t1 = new Thread(writeThread);
+                final Thread t1 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            FileWriter writer = new FileWriter(file);
+
+                            for (int i = 1; i < 11; i++) {
+                                writer.append(i + "\n");
+                                try {
+                                    Thread.sleep(250);
+
+                                } catch (InterruptedException in_ex) {
+                                    in_ex.printStackTrace();
+                                }
+                                System.out.println(i);
+                                progressBar.setProgress(i);
+                            }
+                            progressBar.setProgress(0);
+
+                            writer.flush();
+                            writer.close();
+                        } catch (IOException io_ex) {
+                            io_ex.printStackTrace();
+                        }
+                    }
+                });
                 t1.start();
+
             }
         });
 
         load_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               /* Thread load_thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            FileReader reader = new FileReader(file);
-                            BufferedReader buffReader = new BufferedReader(reader);
-                            String fileLine;
-                            try {
-                                while((fileLine = buffReader.readLine()) != null) {
-                                    numberlist.add(fileLine);
-                                    try {
-                                        Thread.sleep(250);
-                                    } catch (InterruptedException inter_ex) {
-                                        inter_ex.printStackTrace();
-                                    }
-                                    System.out.println("Read: " + fileLine);
-                                }
 
-                            } catch (IOException io_ex) {
-                                io_ex.printStackTrace();
-                            }
+                final Thread t1 = new Thread(new Runnable() {
+                       @Override
+                       public void run() {
+                           try {
+                               FileReader reader = new FileReader(file);
+                               BufferedReader buffReader = new BufferedReader(reader);
+                               String fileLine;
+                               try {
+                                   int i = 0;
+                                   while ((fileLine = buffReader.readLine()) != null) {
+                                       i++;
+                                       numberlist.add(fileLine);
+                                       try {
+                                           Thread.sleep(250);
+                                       } catch (InterruptedException inter_ex) {
+                                           inter_ex.printStackTrace();
+                                       }
+                                       System.out.println("Read: " + fileLine);
+                                       progressBar.setProgress(i);
 
-                        } catch (FileNotFoundException ex) {
-                            ex.printStackTrace();
-                        }
+                                   }
 
-                    }
-                });
+                               } catch (IOException io_ex) {
+                                   io_ex.printStackTrace();
+                               }
 
-                load_thread.start();*/
-                try {
-                    FileReader reader = new FileReader(file);
-                    BufferedReader buffReader = new BufferedReader(reader);
-                    String fileLine;
-                    try {
-                        while((fileLine = buffReader.readLine()) != null) {
-                            numberlist.add(fileLine);
-                            try {
-                                Thread.sleep(250);
-                            } catch (InterruptedException inter_ex) {
-                                inter_ex.printStackTrace();
-                            }
-                            System.out.println("Read: " + fileLine);
-                        }
+                           } catch (FileNotFoundException ex) {
+                               ex.printStackTrace();
+                           }
 
-                    } catch (IOException io_ex) {
-                        io_ex.printStackTrace();
-                    }
+                       }
+                   });
 
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+                t1.start();
 
-
-                ArrayAdapter adapter = new ArrayAdapter<String>(getApplication(), R.layout.my_text, R.id.my_text, numberlist);
-                listView.setAdapter(adapter);
             }
         });
 
         clear_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                adapter.clear();
 
             }
         });
-
 
     }
 

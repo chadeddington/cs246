@@ -10,6 +10,7 @@
         android:layout_width="300dp"
         android:layout_height="30dp"
         android:id="@+id/progress_bar"
+        android:max="10"
         android:layout_centerHorizontal="true"/>
 
     <ListView
