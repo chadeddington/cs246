@@ -20,28 +20,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ReadListener {
 
     ArrayAdapter adapter;
+    List<String> numberlist;
+    Thread readThread;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final List<String> numberlist = new ArrayList<String>();
+        numberlist = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(getApplication(), R.layout.my_text, R.id.my_text, numberlist);
         String filename = "numbers.txt";
         Context context = this;
 
-
         //Create a new file
         final File file = new File(context.getFilesDir(), filename);
+        ReadNumbers readNumbers = new ReadNumbers(file, context);
+        readNumbers.addListener(this);
+        readThread = new Thread(readNumbers);
 
         Button create_button = (Button) findViewById(R.id.create_button);
         Button load_button = (Button) findViewById(R.id.load_button);
         Button clear_button = (Button) findViewById(R.id.clear_button);
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         final ListView listView = (ListView) findViewById(R.id.list_view);
+
         listView.setAdapter(adapter);
 
 
@@ -84,40 +90,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                final Thread t1 = new Thread(new Runnable() {
-                       @Override
-                       public void run() {
-                           try {
-                               FileReader reader = new FileReader(file);
-                               BufferedReader buffReader = new BufferedReader(reader);
-                               String fileLine;
-                               try {
-                                   int i = 0;
-                                   while ((fileLine = buffReader.readLine()) != null) {
-                                       i++;
-                                       numberlist.add(fileLine);
-                                       try {
-                                           Thread.sleep(250);
-                                       } catch (InterruptedException inter_ex) {
-                                           inter_ex.printStackTrace();
-                                       }
-                                       System.out.println("Read: " + fileLine);
-                                       progressBar.setProgress(i);
 
-                                   }
-
-                               } catch (IOException io_ex) {
-                                   io_ex.printStackTrace();
-                               }
-
-                           } catch (FileNotFoundException ex) {
-                               ex.printStackTrace();
-                           }
-
-                       }
-                   });
-
-                t1.start();
+                readThread.start();
 
             }
         });
@@ -127,6 +101,20 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 adapter.clear();
 
+            }
+        });
+
+    }
+
+    @Override
+    public void numberLoaded(String num, int progress) {
+        numberlist.add(num);
+        progressBar.setProgress(progress);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
             }
         });
 

@@ -18,16 +18,17 @@ import java.util.List;
  */
 public class ReadNumbers implements Runnable {
     private File file;
-    private List<String> numberlist = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
     private Context context;
+    private ReadListener listener;
+
     public ReadNumbers (File file, Context context) {
         this.file = file;
         this.context = context;
     }
 
-    public void load() {
-
+    public void addListener(ReadListener listener) {
+        this.listener = listener;
     }
 
 
@@ -38,10 +39,12 @@ public class ReadNumbers implements Runnable {
             BufferedReader buffReader = new BufferedReader(reader);
             String fileLine;
             try {
+                int i = 0;
                 while((fileLine = buffReader.readLine()) != null) {
-                    numberlist.add(fileLine);
+                    i++;
                     try {
                         Thread.sleep(250);
+                        listener.numberLoaded(fileLine, i);
                     } catch (InterruptedException inter_ex) {
                         inter_ex.printStackTrace();
                     }
@@ -55,9 +58,6 @@ public class ReadNumbers implements Runnable {
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
-
-        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1, numberlist);
-
 
     }
 
